@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<nsi:NSA xmlns:nml="http://schemas.ogf.org/nml/2013/05/base#"
+         xmlns:nsi="http://schemas.ogf.org/nsi/2013/09/topology#"
+         xmlns:vc="urn:ietf:params:xml:ns:vcard-4.0"
+         id="urn:ogf:network:curacao.example:2013:nsa" version="2013-07-26T10:42:44Z">
+    <nml:Location id="urn:ogf:network:curacao.example:2013:location">
+        <nml:lat>12.108129</nml:lat>
+        <nml:long>-68.930206</nml:long>
+    </nml:Location>
+    <nsi:Service id="urn:ogf:network:curacao.example:2013:nsa-provserv">
+        <nsi:link>
+            http://localhost:8082/nsicontest/ConnectionProvider       
+        </nsi:link>
+        <nsi:type>application/vnd.org.ogf.nsi.cs.v2+soap</nsi:type>
+        <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#providedBy">
+            <nsi:NSA id="urn:ogf:network:curacao.example:2013:nsa"/>
+        </nsi:Relation>
+    </nsi:Service>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#adminContact">
+        <vc:text>TODO: Convert this to vCard notation
+
+            NSA: OpenNSA   
+            Project manager: curacao guy
+            email: guy@curacao.example mobile: use skype   
+            skype: curacao_guy
+            Network Engineer: curacao dude 
+            email: dude@curacao.example  
+            skype: curacao_dude
+            Key software engineer: curacao chap
+            email: chap@curacao.example mobile: use skype   
+            skype: curacao_chap
+        </vc:text>
+    </nsi:Relation>
+    <nml:Topology id="urn:ogf:network:curacao.example:2013:topology">
+        <nml:name>curacao.example</nml:name>
+        <!-- curacao - dominica -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:curacao-dominica">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:dominica.example:2013:curacao-dominica"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:dominica-curacao">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:dominica.example:2013:dominica-curacao"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:curacao.example:2013:bi-curacao-dominica">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:curacao-dominica"/>
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:dominica-curacao"/>
+        </nml:BidirectionalPort>
+        <!-- PS Server -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:ps-out">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:ps-in">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:curacao.example:2013:bi-ps">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:ps-in"/>
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:ps-out"/>
+        </nml:BidirectionalPort>
+        <!-- curacao - aruba -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:curacao-aruba">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:aruba.example:2013:curacao-aruba"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:aruba-curacao">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:aruba.example:2013:aruba-curacao"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:curacao.example:2013:bi-curacao-aruba">
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:curacao-aruba"/>
+            <nml:PortGroup id="urn:ogf:network:curacao.example:2013:aruba-curacao"/>
+        </nml:BidirectionalPort>
+    </nml:Topology>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#peersWith">
+        <nsi:NSA id="urn:ogf:network:dominica.example:2013:nsa"/>
+    </nsi:Relation>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#peersWith">
+        <nsi:NSA id="urn:ogf:network:aruba.example:2013:nsa"/>
+    </nsi:Relation>
+</nsi:NSA>

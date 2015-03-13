@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<nsi:NSA xmlns:nml="http://schemas.ogf.org/nml/2013/05/base#"
+         xmlns:nsi="http://schemas.ogf.org/nsi/2013/09/topology#"
+         xmlns:vc="urn:ietf:params:xml:ns:vcard-4.0"
+         id="urn:ogf:network:aruba.example:2013:nsa" version="2013-07-26T10:42:44Z">
+    <nml:Location id="urn:ogf:network:aruba.example:2013:location">
+        <nml:lat>12.518034</nml:lat>
+        <nml:long>-69.977760</nml:long>
+    </nml:Location>
+    <nsi:Service id="urn:ogf:network:aruba.example:2013:nsa-provserv">
+        <nsi:link>
+            http://localhost:8080/nsicontest/ConnectionProvider        
+        </nsi:link>
+        <nsi:type>application/vnd.org.ogf.nsi.cs.v2+soap</nsi:type>
+        <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#providedBy">
+            <nsi:NSA id="urn:ogf:network:aruba.example:2013:nsa"/>
+        </nsi:Relation>
+    </nsi:Service>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#adminContact">
+        <vc:text>TODO: Convert this to vCard notation
+
+            NSA: OpenNSA   
+            Project manager: Aruba guy
+            email: guy@aruba.example mobile: use skype   
+            skype: aruba_guy
+            Network Engineer: Aruba dude 
+            email: dude@aruba.example  
+            skype: aruba_dude
+            Key software engineer: Aruba chap
+            email: chap@aruba.example mobile: use skype   
+            skype: aruba_chap
+        </vc:text>
+    </nsi:Relation>
+    <nml:Topology id="urn:ogf:network:aruba.example:2013:topology">
+        <nml:name>aruba.example</nml:name>
+        <!-- Aruba - Curacao -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:aruba-curacao">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:curacao.example:2013:aruba-curacao"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:curacao-aruba">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:curacao.example:2013:curacao-aruba"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:aruba.example:2013:bi-aruba-curacao">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:aruba-curacao"/>
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:curacao-aruba"/>
+        </nml:BidirectionalPort>
+        <!-- PS Server -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:ps-out">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:ps-in">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:aruba.example:2013:bi-ps">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:ps-in"/>
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:ps-out"/>
+        </nml:BidirectionalPort>
+        <!-- Aruba - Bonaire -->
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:aruba-bonaire">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:bonaire.example:2013:aruba-bonaire"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:bonaire-aruba">
+                <nml:LabelGroup labeltype="http://schemas.ogf.org/nml/2012/10/ethernet#vlan">1780-1783</nml:LabelGroup>
+                <nml:Relation type="http://schemas.ogf.org/nml/2013/05/base#isAlias">
+                    <nml:PortGroup id="urn:ogf:network:bonaire.example:2013:bonaire-aruba"/>
+                </nml:Relation>
+            </nml:PortGroup>
+        </nml:Relation>
+        <nml:BidirectionalPort id="urn:ogf:network:aruba.example:2013:bi-aruba-bonaire">
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:aruba-bonaire"/>
+            <nml:PortGroup id="urn:ogf:network:aruba.example:2013:bonaire-aruba"/>
+        </nml:BidirectionalPort>
+    </nml:Topology>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#peersWith">
+        <nsi:NSA id="urn:ogf:network:curacao.example:2013:nsa"/>
+    </nsi:Relation>
+    <nsi:Relation type="http://schemas.ogf.org/nsi/2013/09/topology#peersWith">
+        <nsi:NSA id="urn:ogf:network:bonaire.example:2013:nsa"/>
+    </nsi:Relation>
+</nsi:NSA>

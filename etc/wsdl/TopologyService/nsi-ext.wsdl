@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="etc/wsdl/TopologyService/nsi-ext" targetNamespace="http://org.nsi" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.ogf.org/nsi/2013/09/topology#" xmlns:nml="http://schemas.ogf.org/nml/2013/05/base#" xmlns:nsi="http://schemas.ogf.org/nsi/2013/09/topology#" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:import namespace="http://schemas.ogf.org/nml/2013/05/base#" schemaLocation="nmlbase.xsd"/>
+  
+  <xs:attribute name="isReference" type="xs:anyURI"/>
+  
+  <xs:complexType name="NSARelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nsi:NSA"/>
+      <xs:any maxOccurs="unbounded" minOccurs="1" namespace="##other" processContents="lax"/>  <!-- the place for xCard -->
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nsi/2013/09/topology#managedBy"/>
+          <xs:enumeration value="http://schemas.ogf.org/nsi/2013/09/topology#peersWith"/>
+          <xs:enumeration value="http://schemas.ogf.org/nsi/2013/09/topology#adminContact"/>
+          <!-- in case of adminContact relation the content is the rfc6351 xCard structures  -->
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:element name="Relation" type="nsi:NSARelationType"/>
+  
+  <xs:complexType name="NSAType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" ref="nsi:Service"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" ref="nsi:Relation"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Topology"/>
+          <xs:element minOccurs="0" name="extension" type="nsi:ExtensionType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ExtensionType">
+    <xs:sequence>
+      <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="NSA" type="nsi:NSAType"/>
+  
+  
+  <xs:complexType name="ServiceRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nsi:NSA"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nsi/2013/09/topology#providedBy"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  
+  
+  <xs:group name="BaseInterfaceContent">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="link" type="xs:anyURI"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="describedBy" type="xs:anyURI"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="type" type="xs:string"/>
+    </xs:sequence>
+  </xs:group>
+  
+  
+  <xs:complexType name="ServiceType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nsi:BaseInterfaceContent"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nsi:ServiceRelationType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  
+  <xs:element name="Service" type="nsi:ServiceType"/>
+  
+  
+</xs:schema>
+  </wsdl:types>
+</wsdl:definitions>

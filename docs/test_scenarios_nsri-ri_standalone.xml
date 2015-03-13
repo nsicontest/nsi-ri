@@ -1,0 +1,78 @@
+<scenario id="1">
+    <description>TESTCASE_NAME</description>
+
+    <configure>
+
+        <!-- let's skip the topology whole issue for now:
+            <topology>
+            ...
+            </topology>
+        -->
+
+    <-- there are meant to modify the behaviour of all NSI-RI instances in a test case.
+        Whilst working standalone, these apply to the single NSI-RI instance.
+    -->
+        <nrm>
+                <operation name="reserve" delay="0" action="succeed" />
+                <operation name="commit" delay="0" action="succeed"/>
+                <operation name="provision" delay="0" action="succeed"/>
+                <operation name="release" delay="0" action="succeed"/>
+                <operation name="terminate" delay="0" action="succeed"/>
+        </nrm>
+    <!-- Again, in standalone tests this probably makes no sense, so it's omitted:
+        <domain id="domainA">    <!– override default nrm behaviour -->
+            <nrm>
+                <!– override default nrm behaviour -->
+            </nrm>
+        </domain>
+    -->
+    </configure>
+    <!--
+        ... so basically the <configure> section only shapes the general
+        behaviour of the NRMock engine.
+    -->
+
+
+    <section id="sect1" delay="100" interval="500">
+        <operation id="oper1" name="reserve" delay="10" interval="10" continueOnError="false">
+        <!-- supported attributes:
+            delay           -overrides section attribute
+            interval        -overrides section attribute
+                        continueOnError -makes the sequence progress even in case of error/unexpected result
+        -->
+            <parameters>
+                            <!-- compatible list of parameters for the specified operation -->
+                            <times>
+                <time value="Tue Feb 25 10:57:22 CET 2014"/>
+                <time value="Tue Feb 26 10:57:22 CET 2014"/>
+                            </times>
+                            <stps>
+                <stp name="urn:ogf:network:Hemp:2013:topology:clientExt-A?vlan=2000"/>
+                <stp name="urn:ogf:network:Hemp:2013:topology:clientExt-B?vlan=2000"/>
+                            </stps>
+            </parameters>
+            <result>
+                <finalState state=”reserveConfirmed"/>
+            </result>
+        </operation>
+        <operation id="oper2" name="provision">
+            <parameters>
+                            ...
+            </parameters>
+            <result>
+                            <finalState state=”provisionConfirmed/>
+
+            </result>
+        </operation>
+        <operation id="oper3" name="listen" timeout="10000">
+            <!-- the "listen" operation makes the test progression halt and wait for a inbound NSI request.
+                The operation fails if the timeout is reached, *or* if the request does not match one which
+                the engine was expecting.
+            -->
+            <expect name="reserve" delay="1000" />
+            <expect name="reserveCommit" action="fail" />
+            <!-- i think the delay and action attributes, where specified, simply override those extracted from the
+                <nrm> configuration section above -->
+        </operation>
+    </section>
+</scenario>

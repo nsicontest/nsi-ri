@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="etc/wsdl/ConnectionService/ogf_nsi_services_types_v2_0" targetNamespace="http://org.nsi" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://schemas.ogf.org/nsi/2013/12/services/types" xmlns:tns="http://schemas.ogf.org/nsi/2013/12/services/types" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            This is an XML schema document describing the OGF NSI service
+            specific types.
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <!-- Type definitions for services types. -->
+    <xsd:simpleType name="StpIdType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                Service Termination Points (STPs) are an NSI topology objects
+                that identify the Edge Points of a Network in the intra-network
+                topology.  This type defines an STP identifier.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+    
+    <xsd:complexType name="StpListType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                A simple ordered list type of Service Termination Point (STP). List
+                order is determined by the integer order attribute in the orderedSTP
+                element.
+                
+                Elements:
+                
+                orderedSTP - A list of STP ordered 0..n by their integer order attribute.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="orderedSTP" type="tns:OrderedStpType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="OrderedStpType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                A Service Termination Point (STP) that can be ordered in a list for
+                use in PathObject definition.
+                
+                Attributes:
+                
+                order - Order attribute is provided only when the STP is part of an
+                orderedStpList.
+                
+                Elements:
+                
+                stp - The Service Termination Point (STP).
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="stp" type="tns:StpIdType"/>
+        </xsd:sequence>
+        <xsd:attribute name="order" type="xsd:int" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TypeValueType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                Definition for a simple type and value tuple.
+                
+                Attributes:
+                type - A string representing the name of the type.     
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="type" type="xsd:string" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="DirectionalityType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                The directionality of the requested data service.  Possible values
+                are &quot;Bidirectional&quot; for a bidirectional data service, and
+                &quot;Unidirectional&quot; for a unidirectional data service.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Bidirectional"/>
+            <xsd:enumeration value="Unidirectional"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
+  </wsdl:types>
+</wsdl:definitions>

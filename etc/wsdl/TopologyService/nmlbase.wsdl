@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="etc/wsdl/TopologyService/nmlbase" targetNamespace="http://org.nsi" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.ogf.org/nml/2013/05/base#" xmlns:nml="http://schemas.ogf.org/nml/2013/05/base#" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+  <xs:complexType name="NetworkObject">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="Lifetime" type="nml:LifeTimeType"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="Location" type="nml:LocationType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:anyURI" use="optional"/>
+    <xs:attribute name="version" type="xs:dateTime" use="optional"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:complexType>
+
+
+  <xs:complexType name="LocationType">
+    <xs:all>
+      <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="long" type="xs:float"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="lat" type="xs:float"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="alt" type="xs:float"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="unlocode" type="xs:string"/>
+      <!-- address: rfc6351 xCard: vCard XML Representation -->
+      <xs:element maxOccurs="1" minOccurs="0" name="address">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:any maxOccurs="unbounded" minOccurs="1" namespace="##other" processContents="lax"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element> 
+    </xs:all>
+    <xs:attribute name="id" type="xs:anyURI" use="optional"/>
+  </xs:complexType>
+
+
+  <xs:complexType name="LifeTimeType">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="start" type="xs:dateTime"/>
+      <xs:element maxOccurs="1" minOccurs="0" name="end" type="xs:dateTime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:group name="Group">
+    <xs:choice>
+      <xs:element ref="nml:Topology"/>
+      <xs:element ref="nml:PortGroup"/>
+      <xs:element ref="nml:LinkGroup"/>
+      <xs:element ref="nml:BidirectionalPort"/>
+      <xs:element ref="nml:BidirectionalLink"/>
+    </xs:choice>
+  </xs:group>
+
+
+  <!--  Topology  -->
+
+
+  <xs:complexType name="TopologyRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:group maxOccurs="unbounded" minOccurs="1" ref="nml:Service"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Topology"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasService"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:group name="BaseTopologyContent">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Link"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Node"/>
+      <xs:group maxOccurs="unbounded" minOccurs="0" ref="nml:Service"/>
+      <xs:group maxOccurs="unbounded" minOccurs="0" ref="nml:Group"/>
+      <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="TopologyType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BaseTopologyContent"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:TopologyRelationType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="Topology" type="nml:TopologyType"/>
+
+
+  <!--  Link  -->
+
+
+  <xs:complexType name="LinkRelationType">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Link"/>
+    </xs:sequence>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSerialCompoundLink"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#next"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:group name="BaseLinkContent">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="nml:Label"/>
+      <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="LinkType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BaseLinkContent"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:LinkRelationType"/>
+        </xs:sequence>
+        <xs:attribute name="encoding" type="xs:anyURI" use="optional"/>
+        <xs:attribute name="noReturnTraffic" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="Link" type="nml:LinkType"/>
+
+
+  <!--  Port  -->
+
+
+  <xs:complexType name="PortRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Link"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:group maxOccurs="unbounded" minOccurs="1" ref="nml:Service"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasService"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSink"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSource"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:group name="BasePortContent">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" ref="nml:Label"/>
+      <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="PortType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BasePortContent"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:PortRelationType"/>
+        </xs:sequence>
+        <xs:attribute name="encoding" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="Port" type="nml:PortType"/>
+
+
+  <!--  Node  -->
+
+
+  <xs:complexType name="NodeRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Node"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:SwitchingService"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasService"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:complexType name="NodeType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Node"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:NodeRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="Node" type="nml:NodeType"/>
+
+
+  <!--  Service  -->
+
+
+  <xs:group name="Service">
+    <xs:choice>
+      <xs:element ref="nml:SwitchingService"/>
+      <xs:element ref="nml:AdaptationService"/>
+      <xs:element ref="nml:DeadaptationService"/>
+    </xs:choice>
+  </xs:group>
+
+
+  <!-- SwitchingService -->
+
+
+  <xs:complexType name="SwitchingServiceRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:SwitchingService"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Link"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:LinkGroup"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#hasOutboundPort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#providesLink"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:complexType name="SwitchingServiceType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:SwitchingServiceRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:attribute name="encoding" type="xs:anyURI" use="optional"/>
+        <xs:attribute name="labelSwapping" type="xs:boolean" use="optional"/>
+        <xs:attribute name="labelType" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="SwitchingService" type="nml:SwitchingServiceType"/>
+
+
+  <!--  AdaptationService -->
+
+
+  <xs:complexType name="AdaptationServiceRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:AdaptationService"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#canProvidePort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#providesPort"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:complexType name="AdaptationServiceType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:AdaptationServiceRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:attribute name="adaptationFunction" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="AdaptationService" type="nml:AdaptationServiceType"/>
+
+
+  <!-- DeadaptationService -->
+
+
+  <xs:complexType name="DeadaptationServiceRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:DeadaptationService"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#canProvidePort"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#providesPort"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:complexType name="DeadaptationServiceType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:DeadaptationServiceRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:attribute name="adaptationFunction" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="DeadaptationService" type="nml:DeadaptationServiceType"/>
+
+
+  <!--  Label  -->
+
+
+  <xs:complexType name="LabelType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="labeltype" type="xs:anyURI" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+  <xs:element name="Label" type="nml:LabelType"/>
+
+
+  <!--  LinkGroup  -->
+
+
+  <xs:complexType name="LinkGroupRelationType">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:LinkGroup"/>
+    </xs:sequence>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSerialCompoundLink"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:group name="BaseLinkGroup">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:LabelGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Link"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:LinkGroup"/>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="LinkGroupType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BaseLinkGroup"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:LinkGroupRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="LinkGroup" type="nml:LinkGroupType"/>
+
+
+  <!--  PortGroup  -->
+
+
+  <xs:complexType name="PortGroupRelationType">
+    <xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:PortGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="1" ref="nml:LinkGroup"/>
+    </xs:choice>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isAlias"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSink"/>
+          <xs:enumeration value="http://schemas.ogf.org/nml/2013/05/base#isSource"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+
+  <xs:group name="BasePortGroup">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:LabelGroup"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:Port"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="nml:PortGroup"/>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="PortGroupType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BasePortGroup"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="Relation" type="nml:PortGroupRelationType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:attribute name="encoding" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="PortGroup" type="nml:PortGroupType"/>
+
+
+
+  <!--  BidirectionalLink  -->
+
+
+  <xs:group name="BaseBidirectionalLink">
+    <xs:sequence>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element ref="nml:Link"/>
+          <xs:element ref="nml:Link"/>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element ref="nml:LinkGroup"/>
+          <xs:element ref="nml:LinkGroup"/>
+        </xs:sequence>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="BidirectionalLinkType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BaseBidirectionalLink"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="BidirectionalLink" type="nml:BidirectionalLinkType"/>
+
+
+  <!--  BidirectionalPort  -->
+
+
+  <xs:group name="BaseBidirectionalPort">
+    <xs:sequence>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element ref="nml:Port"/>
+          <xs:element ref="nml:Port"/>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element ref="nml:PortGroup"/>
+          <xs:element ref="nml:PortGroup"/>
+        </xs:sequence>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+
+
+  <xs:complexType name="BidirectionalPortType">
+    <xs:complexContent>
+      <xs:extension base="nml:NetworkObject">
+        <xs:sequence>
+          <xs:group ref="nml:BaseBidirectionalPort"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:element name="BidirectionalPort" type="nml:BidirectionalPortType"/>
+
+
+  <!--  LabelGroup  -->
+
+
+  <xs:complexType name="LabelGroupType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="labeltype" type="xs:anyURI" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+  <xs:element name="LabelGroup" type="nml:LabelGroupType"/>
+
+
+</xs:schema>
+  </wsdl:types>
+</wsdl:definitions>

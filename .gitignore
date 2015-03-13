@@ -1,0 +1,10 @@
+\bin
+\build
+\.metadata
+\.settings
+*.project
+*.log
+*.jar
+*.war
+*.ear
+*.zip

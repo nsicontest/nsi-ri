@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="nsi" basedir=".">
+
+	<property file="build.properties" />
+
+	<path id="project.classpath">
+		<pathelement location="${build.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="cleanup">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="init" description="Compiles source files and puts them in build dir">
+		<javac destdir="${build.dir}" srcdir="${src.dir}" source="1.6" target="1.6" debug="${debug}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+	
+	<target name="gen-wsdl-topology" depends="compile" description="generates topology wsdl file">
+		<java classname="org.apache.cxf.tools.java2ws.JavaToWS" fork="true">
+	   		<arg value="-wsdl"/>
+	      	<!--<arg line="-server"/>-->
+	        <arg line="-output ${wsdl.dir}/topology.wsdl"/>
+			<arg value="net.geant.nsicontest.topology.TopologyService"/>
+	        <classpath>
+		        <path refid="project.classpath"/>
+		    </classpath>
+		</java>
+	</target>	
+
+	<!-- NSI/NML TOPOLOGY SOURCE GENERATION
+		 Files are distributed as schema files. In order to transform them into source files,
+		 intermediate step is required - converting them to wsdls first.	
+	-->
+	
+	<target name="gen-wsdl-xcard">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.topology}"/>
+			<arg value="${wsdl.dir}/${wsdl.topology}/xcard.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-src-xcard">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<!--<arg value="-validate" /> NOT WORKING -->
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.topology}/xcard.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-wsdl-nml">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.topology}"/>
+			<arg value="${wsdl.dir}/${wsdl.topology}/nmlbase.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-src-nml">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<!--<arg value="-validate" /> NOT WORKING -->
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.topology}/nmlbase.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+		
+	<target name="gen-wsdl-nsiext">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.topology}"/>
+			<arg value="${wsdl.dir}/${wsdl.topology}/nsi-ext.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="gen-src-nsiext">
+			<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<!--<arg value="-validate" /> NOT WORKING -->
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.topology}/nsi-ext.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="gen-src-topology" description="Generates TopologyService sources">
+		<antcall target="gen-wsdl-nml"/>
+		<antcall target="gen-src-nml"/>
+		<antcall target="gen-wsdl-nsiext"/>
+		<antcall target="gen-src-nsiext"/>		
+	</target>
+		
+	<!-- P2P SOURCE GENERATION -->	
+	
+	<target name="gen-src-nsi-provider">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<arg value="-validate" />
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-wsdlLocation file:${wsdl.dir}/${wsdl.connection}/ogf_nsi_connection_provider_v2_0.wsdl" />
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_connection_provider_v2_0.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="gen-src-nsi-requester">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<arg value="-validate" />
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-wsdlLocation file:${wsdl.dir}/${wsdl.connection}/ogf_nsi_connection_requester_v2_0.wsdl" />
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_connection_requester_v2_0.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="gen-src-nsi" description="Generates ConnectionService sources">
+		<antcall target="gen-src-nsi-provider" />
+		<antcall target="gen-src-nsi-requester" />
+	</target>
+	
+	<target name="gen-wsdl-service-definition">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.connection}"/>
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_definition_v2_0.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-src-service-definition">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">					
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-wsdlLocation file:${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_definition_v2_0.wsdl" />
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_definition_v2_0.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-wsdl-service-types">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.connection}"/>
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_types_v2_0.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-src-service-types">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">					
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-wsdlLocation file:${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_types_v2_0.wsdl" />
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_types_v2_0.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-wsdl-service-p2p">
+		<java classname="org.apache.cxf.tools.misc.XSDToWSDL" fork="true">
+			<arg line="-t http://org.nsi"/>
+			<arg line="-d ${wsdl.dir}/${wsdl.connection}"/>
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_p2p_v2_0.xsd" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+		
+	<target name="gen-src-service-p2p">
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">				
+			<arg value="-verbose" />
+			<arg value="-impl" />
+			<arg line ="-exsh true"/>
+			<arg line="-wsdlLocation file:${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_p2p_v2_0.wsdl" />
+			<arg line="-d src" />
+			<arg value="${wsdl.dir}/${wsdl.connection}/ogf_nsi_services_p2p_v2_0.wsdl" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="gen-src-p2p" description="Generates sources for ConnectionService and P2P service">
+		<antcall target="gen-wsdl-service-definition" />
+		<antcall target="gen-src-service-definition" />
+		<antcall target="gen-wsdl-service-types" />
+		<antcall target="gen-src-service-types" />
+		<antcall target="gen-wsdl-service-p2p" />
+		<antcall target="gen-src-service-p2p" />
+	</target>	
+	
+	<target name="gen-src-all" description="Generates sources for TopologyService and ConnectionService">
+		<antcall target="gen-src-topology"/>
+		<antcall target="gen-src-p2p"/>
+	</target>
+	
+	<target name="jar" depends="compile" description="Compiles and creates jar file in main directory">
+
+		<jar basedir="${build.dir}" destfile="${project.jar}" />
+		<antcall target="cleanup" />
+	</target>
+
+	<target name="zip" depends="jar" description="Creates zip file in main directory">
+
+		<mkdir dir="${temp.dir}" />
+
+		<copy file="${project.jar}" todir="${temp.dir}/${lib.dir}" />
+		
+		<copy file="start.sh" todir="${temp.dir}" />
+		<copy file="startConsole.sh" todir="${temp.dir}" />
+		<copy file="stop.sh" todir="${temp.dir}" />
+		
+		<copy todir="${temp.dir}/${lib.dir}">
+			<fileset dir="${lib.dir}" />
+		</copy>
+
+		<copy todir="${temp.dir}/${etc.dir}">
+			<fileset dir="${etc.dir}" />
+		</copy>
+		
+		<copy todir="${temp.dir}/${doc.dir}">
+			<fileset dir="${doc.dir}" />
+		</copy>
+
+		<jar basedir="${temp.dir}" destfile="${project.zip}" />
+		<delete dir="${temp.dir}" />
+	</target>
+	
+</project>
+
